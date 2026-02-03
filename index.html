@@ -1,197 +1,106 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="te">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>India Pin Codes | World Class Directory</title>
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
-    <!-- CSV Parser -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <!-- Meta/SEO -->
-    <meta name="description" content="Find accurate Pin Codes, Courier Services, and Local News for every region in India. The most comprehensive and beautiful directory.">
+    <title>All India Pincode Searcher</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input { width: 80%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        #loading { color: blue; font-weight: bold; }
+    </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <header>
-        <div class="container nav-container">
-            <div class="logo text-gradient">
-                <i data-lucide="map-pin"></i> PinCode India
-            </div>
-            <nav class="nav-links">
-                <a href="index.html" class="active">Home</a>
-                <a href="about.html">About Developer</a>
-                <a href="#contact">Contact</a>
-            </nav>
-            <button class="btn btn-primary">Get App</button>
-        </div>
-    </header>
+<div class="container">
+    <h1>All India Pincode Searcher</h1>
+    <p id="loading">డేటా లోడ్ అవుతోంది... దయచేసి వేచి ఉండండి.</p>
+    
+    <input type="text" id="searchInput" placeholder="పిన్‌కోడ్ లేదా ఊరి పేరు టైప్ చేయండి..." onkeyup="searchData()">
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h1>Find Any <span class="text-gradient">Pin Code</span> in India</h1>
-            <p>Search across 150,000+ post offices. Accurate, fast, and constantly updated.</p>
-            
-            <div class="search-wrapper">
-                <div class="search-container">
-                    <i data-lucide="search" class="search-icon"></i>
-                    <input type="text" id="searchInput" class="search-input" placeholder="Enter Pincode, Office Name, or District...">
-                    <button class="btn btn-primary search-btn" onclick="handleSearch()">Search</button>
-                </div>
-            </div>
+    <div id="resultCount"></div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Office Name</th>
+                <th>Pincode</th>
+                <th>District</th>
+                <th>State</th>
+            </tr>
+        </thead>
+        <tbody id="resultsTable">
+            </tbody>
+    </table>
+</div>
 
-            <!-- Data Loader CTA -->
-            <div class="upload-cta" id="uploadCta">
-                <div style="margin-bottom:12px; font-weight:600; color:var(--text-light)">
-                    <i data-lucide="database" style="vertical-align:middle; margin-right:8px"></i>
-                     Initialize the Master Database for Full Access
-                </div>
-                <input type="file" id="csvFileInput" accept=".csv" style="display:none">
-                <button class="btn" style="border:1px solid #cbd5e1" onclick="document.getElementById('csvFileInput').click()">
-                    Load PinCode Data File (CSV)
-                </button>
-                <p style="font-size:0.8rem; color:#94a3b8; margin-top:8px;">Select your 'all india pincoads.csv' file to enable offline search.</p>
-            </div>
-        </div>
-    </section>
+<script>
+    let pincodeData = [];
 
-    <!-- Stats -->
-    <section class="container">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value">1.5L+</div>
-                <div class="stat-label">Post Offices</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">28</div>
-                <div class="stat-label">States</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">800+</div>
-                <div class="stat-label">Districts</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">100%</div>
-                <div class="stat-label">Accurate</div>
-            </div>
-        </div>
-    </section>
+    // 1. వెబ్‌సైట్ ఓపెన్ అవ్వగానే ఫైల్‌ను ఆటోమేటిక్‌గా లోడ్ చేస్తుంది
+    window.addEventListener('DOMContentLoaded', () => {
+        const csvUrl = 'pincodes.csv'; // మీ ఫైల్ పేరు సరిగ్గా ఉండాలి
 
-    <!-- Main Content Layout (Results + Sidebar) -->
-    <section class="container content-layout">
-        
-        <!-- Main Column -->
-        <main>
-            <div class="results-header" style="display:flex; justify-content:space-between; align-items:center;">
-                <h3 id="resultsTitle">Top Locations</h3>
-                <span style="font-size:0.9rem; color:var(--text-light)" id="resultCount">Showing previews</span>
-            </div>
+        fetch(csvUrl)
+            .then(response => response.text())
+            .then(csvText => {
+                pincodeData = parseCSV(csvText);
+                document.getElementById('loading').innerText = "డేటా సిద్ధంగా ఉంది! మీరు సెర్చ్ చేయవచ్చు.";
+                setTimeout(() => document.getElementById('loading').style.display = 'none', 3000);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById('loading').innerText = "ఫైల్ లోడ్ చేయడంలో విఫలమైంది. ఫైల్ పేరు సరిగ్గా ఉందో లేదో చూడండి.";
+            });
+    });
 
-            <div id="resultsGrid" class="results-grid">
-                <!-- Results injected by JS -->
-            </div>
-        </main>
+    // 2. CSVని ఆబ్జెక్టులుగా మార్చే ఫంక్షన్
+    function parseCSV(text) {
+        const lines = text.split('\n');
+        const headers = lines[0].split(',');
+        return lines.slice(1).map(line => {
+            const data = line.split(',');
+            if (data.length >= headers.length) {
+                let obj = {};
+                headers.forEach((header, index) => {
+                    obj[header.trim().toLowerCase()] = data[index] ? data[index].trim() : '';
+                });
+                return obj;
+            }
+        }).filter(item => item);
+    }
 
-        <!-- Sidebar (Ads, News, Profile) -->
-        <aside>
-            <!-- Ad Placeholder -->
-            <div class="ad-placeholder" style="margin-bottom: 24px;">
-                Ad Space (300x250)
-            </div>
+    // 3. సెర్చ్ చేసే ఫంక్షన్
+    function searchData() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const tableBody = document.getElementById('resultsTable');
+        tableBody.innerHTML = ''; 
 
-            <!-- Profile Card -->
-            <div class="sidebar-card">
-                <h4 style="margin-bottom:16px; border-bottom:1px solid #eee; padding-bottom:8px;">Developer Profile</h4>
-                <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-                    <div style="width:50px; height:50px; background:#e0e7ff; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--primary); font-weight:bold;">M</div>
-                    <div>
-                        <div style="font-weight:700">Murali</div>
-                        <div style="font-size:0.85rem; color:#64748b">Lead Developer</div>
-                    </div>
-                </div>
-                <div style="font-size:0.9rem; margin-bottom:16px; color:#475569;">
-                    <p style="margin-bottom:8px"><i data-lucide="mail" style="width:14px; vertical-align:middle"></i> muralimohan983@gmail.com</p>
-                    <p><i data-lucide="phone" style="width:14px; vertical-align:middle"></i> 7358333007</p>
-                </div>
-                <a href="about.html" class="btn btn-primary" style="width:100%; font-size:0.9rem">View Full Profile</a>
-            </div>
+        if (query.length < 3) return; // 3 అక్షరాల కంటే తక్కువ ఉంటే సెర్చ్ చేయదు
 
-            <!-- Local News Widget -->
-            <div class="sidebar-card">
-                <h4 style="margin-bottom:16px;">Local News Updates</h4>
-                <div class="news-item">
-                    <a href="#" class="news-title">New Postal Services Launched in Telangana</a>
-                    <div class="news-meta">2 hours ago • Regional</div>
-                </div>
-                <div class="news-item">
-                    <a href="#" class="news-title">Courier Delays Expected Due to Rain</a>
-                    <div class="news-meta">5 hours ago • Alert</div>
-                </div>
-                <div class="news-item">
-                    <a href="#" class="news-title">Digital Banking in Rural Post Offices</a>
-                    <div class="news-meta">1 day ago • Tech</div>
-                </div>
-            </div>
+        const filtered = pincodeData.filter(item => 
+            (item.pincode && item.pincode.includes(query)) || 
+            (item.officename && item.officename.toLowerCase().includes(query)) ||
+            (item.district && item.district.toLowerCase().includes(query))
+        ).slice(0, 50); // కేవలం మొదటి 50 రిజల్ట్స్ చూపిస్తుంది (వేగం కోసం)
 
-             <!-- Ad Placeholder -->
-             <div class="ad-placeholder">
-                Ad Space (Sticky)
-            </div>
+        filtered.forEach(item => {
+            const row = `<tr>
+                <td>${item.officename}</td>
+                <td>${item.pincode}</td>
+                <td>${item.district}</td>
+                <td>${item.statename}</td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
+</script>
 
-        </aside>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <h2>PinCode India</h2>
-                    <p>The most reliable source for Indian postal codes and addresses. Built with precision and care.</p>
-                </div>
-                <div class="footer-links">
-                    <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="about.html">About Developer</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h3>Services</h3>
-                    <ul>
-                        <li><a href="#">Pin Code Search</a></li>
-                        <li><a href="#">Courier Locator</a></li>
-                        <li><a href="#">Post Office Details</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h3>Contact</h3>
-                    <ul>
-                        <li>muralimohan983@gmail.com</li>
-                        <li>+91 7358333007</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                &copy; 2026 PinCode India. Designed by Murali. All rights reserved.
-            </div>
-        </div>
-    </footer>
-
-    <!-- Logic -->
-    <script src="app.js"></script>
-    <script>
-        lucide.createIcons();
-    </script>
 </body>
 </html>
+
