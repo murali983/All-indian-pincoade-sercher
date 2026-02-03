@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Pin Codes | World Class Directory</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- CSV Parser -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- Meta/SEO -->
+    <meta name="description" content="Find accurate Pin Codes, Courier Services, and Local News for every region in India. The most comprehensive and beautiful directory.">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="container nav-container">
+            <div class="logo text-gradient">
+                <i data-lucide="map-pin"></i> PinCode India
+            </div>
+            <nav class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="about.html">About Developer</a>
+                <a href="#contact">Contact</a>
+            </nav>
+            <button class="btn btn-primary">Get App</button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Find Any <span class="text-gradient">Pin Code</span> in India</h1>
+            <p>Search across 150,000+ post offices. Accurate, fast, and constantly updated.</p>
+            
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Enter Pincode, Office Name, or District...">
+                    <button class="btn btn-primary search-btn" onclick="handleSearch()">Search</button>
+                </div>
+            </div>
+
+            <!-- Data Loader CTA -->
+            <div class="upload-cta" id="uploadCta">
+                <div style="margin-bottom:12px; font-weight:600; color:var(--text-light)">
+                    <i data-lucide="database" style="vertical-align:middle; margin-right:8px"></i>
+                     Initialize the Master Database for Full Access
+                </div>
+                <input type="file" id="csvFileInput" accept=".csv" style="display:none">
+                <button class="btn" style="border:1px solid #cbd5e1" onclick="document.getElementById('csvFileInput').click()">
+                    Load PinCode Data File (CSV)
+                </button>
+                <p style="font-size:0.8rem; color:#94a3b8; margin-top:8px;">Select your 'all india pincoads.csv' file to enable offline search.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">1.5L+</div>
+                <div class="stat-label">Post Offices</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">28</div>
+                <div class="stat-label">States</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">800+</div>
+                <div class="stat-label">Districts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Accurate</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Layout (Results + Sidebar) -->
+    <section class="container content-layout">
+        
+        <!-- Main Column -->
+        <main>
+            <div class="results-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 id="resultsTitle">Top Locations</h3>
+                <span style="font-size:0.9rem; color:var(--text-light)" id="resultCount">Showing previews</span>
+            </div>
+
+            <div id="resultsGrid" class="results-grid">
+                <!-- Results injected by JS -->
+            </div>
+        </main>
+
+        <!-- Sidebar (Ads, News, Profile) -->
+        <aside>
+            <!-- Ad Placeholder -->
+            <div class="ad-placeholder" style="margin-bottom: 24px;">
+                Ad Space (300x250)
+            </div>
+
+            <!-- Profile Card -->
+            <div class="sidebar-card">
+                <h4 style="margin-bottom:16px; border-bottom:1px solid #eee; padding-bottom:8px;">Developer Profile</h4>
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                    <div style="width:50px; height:50px; background:#e0e7ff; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--primary); font-weight:bold;">M</div>
+                    <div>
+                        <div style="font-weight:700">Murali</div>
+                        <div style="font-size:0.85rem; color:#64748b">Lead Developer</div>
+                    </div>
+                </div>
+                <div style="font-size:0.9rem; margin-bottom:16px; color:#475569;">
+                    <p style="margin-bottom:8px"><i data-lucide="mail" style="width:14px; vertical-align:middle"></i> muralimohan983@gmail.com</p>
+                    <p><i data-lucide="phone" style="width:14px; vertical-align:middle"></i> 7358333007</p>
+                </div>
+                <a href="about.html" class="btn btn-primary" style="width:100%; font-size:0.9rem">View Full Profile</a>
+            </div>
+
+            <!-- Local News Widget -->
+            <div class="sidebar-card">
+                <h4 style="margin-bottom:16px;">Local News Updates</h4>
+                <div class="news-item">
+                    <a href="#" class="news-title">New Postal Services Launched in Telangana</a>
+                    <div class="news-meta">2 hours ago • Regional</div>
+                </div>
+                <div class="news-item">
+                    <a href="#" class="news-title">Courier Delays Expected Due to Rain</a>
+                    <div class="news-meta">5 hours ago • Alert</div>
+                </div>
+                <div class="news-item">
+                    <a href="#" class="news-title">Digital Banking in Rural Post Offices</a>
+                    <div class="news-meta">1 day ago • Tech</div>
+                </div>
+            </div>
+
+             <!-- Ad Placeholder -->
+             <div class="ad-placeholder">
+                Ad Space (Sticky)
+            </div>
+
+        </aside>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h2>PinCode India</h2>
+                    <p>The most reliable source for Indian postal codes and addresses. Built with precision and care.</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Developer</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="#">Pin Code Search</a></li>
+                        <li><a href="#">Courier Locator</a></li>
+                        <li><a href="#">Post Office Details</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h3>Contact</h3>
+                    <ul>
+                        <li>muralimohan983@gmail.com</li>
+                        <li>+91 7358333007</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2026 PinCode India. Designed by Murali. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Logic -->
+    <script src="app.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
